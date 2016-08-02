@@ -10,6 +10,7 @@ Accounts.ui.config({
 });
 
 const App = ({ userId, currentUser }) => {
+  console.log(currentUser);
   return (
     <div>
       <Accounts.ui.LoginForm />
