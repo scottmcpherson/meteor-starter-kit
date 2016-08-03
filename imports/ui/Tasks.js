@@ -5,17 +5,17 @@ import gql from 'graphql-tag';
 class TaskItem extends Component {
   constructor(props) {
     super(props);
+    this.deleteTask = this.deleteTask.bind(this);
   }
   deleteTask() {
     console.log(`Delete ${this.props.task.title}`);
-    this.props.onDelete(this.props.task.title)
+    this.props.onDelete(this.props.task)
   }
   render() {
-    const index = this.props.index;
     const { title } = this.props.task;
 
     return (
-      <li key={index}>{title} <a href="#" onClick={this.deleteTask.bind(this)}>Delete</a></li>
+      <li>{title} <a href="#" onClick={this.deleteTask}>Delete</a></li>
     )
   }
 }
@@ -28,8 +28,11 @@ function TaskList({ tasksData, mutations }) {
     <div>
       <h1>Tasks</h1>
       <ul>
-      {tasks && tasks.map((task, index) =>
-        <TaskItem key={index} task={task} index={index} onDelete={(...args) => mutations.deleteTask(...args)}/>)}
+      {tasks &&
+        tasks.map(task =>
+          <TaskItem key={task._id} task={task} onDelete={mutations.deleteTask} />
+        )
+      }
       </ul>
     </div>
   )
@@ -52,23 +55,25 @@ const Tasks = connect({
     };
   },
   mapMutationsToProps: () => ({
-    deleteTask: (title) => ({
+    deleteTask: (task) => ({
       mutation: gql`
-        mutation ($title: String!) {
-          deleteTask(title: $title) {
+        mutation ($id: String!) {
+          deleteTask(_id: $id) {
+            _id
             title
           }
         }
       `,
       variables: {
-        title
+        id: task._id
       },
       updateQueries: {
         tasks: (previousQueryResult, { mutationResult }) => {
           console.log('previousQueryResult: ', previousQueryResult);
           console.log('mutationResult: ', mutationResult);
+          const newTasks = mutationResult.data.deleteTask;
           return {
-            tasks: [mutationResult],
+            tasks: newTasks,
           }
         }
       }

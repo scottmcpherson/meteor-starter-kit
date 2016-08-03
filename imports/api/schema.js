@@ -20,7 +20,7 @@ type Task {
 }
 
 type Mutation {
-  deleteTask(title: String!): [Task]
+  deleteTask(_id: String!): [Task]
 }
 
 type Query {
@@ -33,24 +33,6 @@ schema {
   mutation: Mutation
 }
 `]
-
-let allTasks = [
-  { _id: Random.id(), title: casual.title },
-  { _id: Random.id(), title: casual.title },
-  { _id: Random.id(), title: casual.title }
-]
-
-let getTasks = (callback) => {
-  setTimeout(function() {
-    callback(allTasks)
-  }, 1000)
-}
-
-// function getTasks() {
-//   // return setTimeout(() => {
-//     return allTasks
-//   // }, 100)
-// }
 
 export const resolvers = {
   Query: {
@@ -69,9 +51,8 @@ export const resolvers = {
     randomString: () => Random.id(),
   },
   Mutation: {
-    deleteTask(_, { title }, context) {
-      console.log(title);
-      Tasks.remove({ title });
+    deleteTask(_, { _id }, context) {
+      Tasks.remove({ _id });
       return Tasks.find().fetch()
     }
   }
