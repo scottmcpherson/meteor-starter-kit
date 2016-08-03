@@ -24,17 +24,8 @@ function Layout({ children, params, location, userId, currentUser }) {
           <button onClick={() => currentUser.refetch()}>Refetch!</button>
         </div>
       ) : 'Please log in!' }
-      <TestMount/>
     </div>
   )
-}
-
-class TestMount extends Component {
-  render() {
-    return (
-      <span>Mount</span>
-    )
-  }
 }
 
 // This container brings in Apollo GraphQL data
