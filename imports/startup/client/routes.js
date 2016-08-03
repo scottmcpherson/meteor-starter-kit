@@ -1,23 +1,28 @@
 import React from 'react';
-import { Router, Route, Link, browserHistory } from 'react-router';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import { render } from 'react-dom';
 import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import { meteorClientConfig } from 'meteor/apollo';
-import App from '../../ui/App';
-import { About } from '../../ui/About'
+import { Meteor } from 'meteor/meteor';
 
-const client = new ApolloClient(meteorClientConfig());
+import Layout from '../../ui/Layout';
+import Home from '../../ui/Home';
+import Tasks from '../../ui/Tasks';
 
-const AppContainer = () => (
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>
-);
 
-export const renderRoutes = () => (
-  <Router history={browserHistory}>
-    <Route path="/" component={AppContainer}>
-      <Route path="about" component={About}/>
-    </Route>
-  </Router>
-)
+const client = new ApolloClient(meteorClientConfig())
+
+Meteor.startup(() => {
+  render(
+    <ApolloProvider client={client}>
+      <Router history={browserHistory}>
+        <Route path="/" component={Layout}>
+          <IndexRoute component={Home} />
+          <Route path="tasks" component={Tasks}/>
+        </Route>
+      </Router>
+    </ApolloProvider>,
+    document.getElementById('app')
+  )
+})

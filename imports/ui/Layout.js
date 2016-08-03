@@ -1,33 +1,44 @@
 import React, { Component } from 'react';
 import { connect } from 'react-apollo';
-import { Meteor } from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
-import { Accounts } from 'meteor/std:accounts-ui';
 import gql from 'graphql-tag';
+import { createContainer } from 'meteor/react-meteor-data';
+import { Link } from 'react-router';
+import { Accounts } from 'meteor/std:accounts-ui';
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_ONLY'
 });
 
-const App = (props) => {
-  console.log(this);
+function Layout({ children, params, location, userId, currentUser }) {
   return (
     <div>
-      <a href="/">home</a>&nbsp;
-      <a href="/about">about</a>
+      <Link to="/">Home</Link> &nbsp;
+      <Link to="/tasks">Tasks</Link> &nbsp;
+      <div className="container">
+        {children}
+      </div>
       <Accounts.ui.LoginForm />
-      { props.userId ? (
+      { userId ? (
         <div>
           <pre>{JSON.stringify(currentUser, null, 2)}</pre>
           <button onClick={() => currentUser.refetch()}>Refetch!</button>
         </div>
       ) : 'Please log in!' }
+      <TestMount/>
     </div>
   )
 }
 
+class TestMount extends Component {
+  render() {
+    return (
+      <span>Mount</span>
+    )
+  }
+}
+
 // This container brings in Apollo GraphQL data
-const AppWithData = connect({
+const LayoutWithData = connect({
   mapQueriesToProps({ ownProps }) {
     if (ownProps.userId) {
       return {
@@ -51,13 +62,13 @@ const AppWithData = connect({
       };
     }
   },
-})(App);
+})(Layout);
 
-// This container brings in Tracker-enabled Meteor data
-const AppWithUserId = createContainer((props) => {
+
+const LayoutWithUserId = createContainer((props) => {
   return {
     userId: Meteor.userId(),
-  };
-}, App);
+  }
+}, LayoutWithData);
 
-export default AppWithUserId;
+export default LayoutWithUserId
