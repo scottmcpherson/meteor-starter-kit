@@ -10,6 +10,11 @@ class TaskItem extends Component {
   deleteTask() {
     console.log(`Delete ${this.props.task.title}`);
     this.props.onDelete(this.props.task)
+      .then((err, data) => {
+        console.log(data);
+        this.props.tasks.refetch();
+      });
+
   }
   render() {
     const { title } = this.props.task;
@@ -22,7 +27,6 @@ class TaskItem extends Component {
 
 function TaskList({ tasksData, mutations }) {
   const { tasks } = tasksData
-  console.log(tasks);
 
   return (
     <div>
@@ -30,7 +34,7 @@ function TaskList({ tasksData, mutations }) {
       <ul>
       {tasks &&
         tasks.map(task =>
-          <TaskItem key={task._id} task={task} onDelete={mutations.deleteTask} />
+          <TaskItem key={task._id} task={task} tasks={tasksData} onDelete={mutations.deleteTask} />
         )
       }
       </ul>
@@ -39,22 +43,24 @@ function TaskList({ tasksData, mutations }) {
 }
 
 // This container brings in Apollo GraphQL data
-const Tasks = connect({
-  mapQueriesToProps() {
-    return {
-      tasksData: {
-        query: gql`
-            {
-              tasks {
-                _id
-                title
-              }
+
+function mapQueriesToProps() {
+  return {
+    tasksData: {
+      query: gql`
+          query tasks {
+            tasks {
+              _id
+              title
             }
-          `
-      }
-    };
-  },
-  mapMutationsToProps: () => ({
+          }
+        `
+    }
+  };
+};
+
+function mapMutationsToProps() {
+  return {
     deleteTask: (task) => ({
       mutation: gql`
         mutation ($id: String!) {
@@ -78,7 +84,12 @@ const Tasks = connect({
         }
       }
     })
-  })
+  }
+};
+
+const Tasks = connect({
+  mapQueriesToProps,
+  mapMutationsToProps
 })(TaskList);
 
 export default Tasks;
