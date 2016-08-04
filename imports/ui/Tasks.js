@@ -82,13 +82,3 @@ const Tasks = connect({
 })(TaskList);
 
 export default Tasks;
-
-// ,
-// mapMutationsToProps: () => ({
-//   deleteTask: (title) => ({
-//     mutation: gql`
-//       mutation deleteTask($title: !String) {
-//         title
-//       }
-//     `
-//   })
