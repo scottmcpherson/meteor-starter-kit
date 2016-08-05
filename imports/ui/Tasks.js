@@ -8,13 +8,14 @@ class TaskItem extends Component {
     this.deleteTask = this.deleteTask.bind(this);
   }
   deleteTask() {
-    console.log(`Delete ${this.props.task.title}`);
-    this.props.onDelete(this.props.task)
-      .then((err, data) => {
-        console.log(data);
-        this.props.tasks.refetch();
-      });
+    // Can also call delete on the mutations directly
+    // this.prop.mutations.deleteTask(_id).then(....
 
+    this.props.onDelete(this.props.task)
+        .then((err, data) => {
+          // Can refetch the data this way
+          // this.props.tasks.refetch();
+        });
   }
   render() {
     const { title } = this.props.task;
@@ -27,7 +28,12 @@ class TaskItem extends Component {
 
 function TaskList({ tasksData, mutations }) {
   const { tasks } = tasksData
+  console.log(tasksData);
+  console.log(mutations);
 
+  // Have to specify polling here
+  tasksData.startPolling(1000);
+  
   return (
     <div>
       <h1>Tasks</h1>
