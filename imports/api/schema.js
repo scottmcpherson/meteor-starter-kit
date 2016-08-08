@@ -21,6 +21,7 @@ type Task {
 
 type Mutation {
   deleteTask(_id: String!): [Task]
+  addTask(title: String!): Task
 }
 
 type Query {
@@ -51,6 +52,11 @@ export const resolvers = {
     randomString: () => Random.id(),
   },
   Mutation: {
+    addTask(_, { title }, context) {
+      const _id = Tasks.insert({ title });
+      return { _id };
+      return Tasks.findOne(id);
+    },
     deleteTask(_, { _id }, context) {
       Tasks.remove({ _id });
       return Tasks.find().fetch()
